@@ -1,5 +1,6 @@
 package org.github.jandin88.mygl.domain.model;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,8 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "tb_users")
 @Getter
 @Setter
-
-public class Users implements Serializable {
+public class User implements Serializable {
 
 
     @Id
@@ -30,18 +30,20 @@ public class Users implements Serializable {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    public Users(String username, String email, String password){
+
+    public User(String username, String email, String password){
         this.username=username;
         this.email=email;
         this.password=password;
     }
 
-    public Users() {
+    public User() {
     }
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
 
 }
