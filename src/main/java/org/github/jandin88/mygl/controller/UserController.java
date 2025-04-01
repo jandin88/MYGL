@@ -18,11 +18,35 @@ public class UserController {
     @Autowired
     private UserService service;
 
+
+
+
+    @GetMapping
+    public ResponseEntity<List<ResponseUserDto>> findAll(){
+        return ResponseEntity.ok().body(service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseUserDto> findById(@PathVariable Long id){
+        return ResponseEntity.ok().body(service.findUserID(id));
+    }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<ResponseUserDto> findByUsername(@PathVariable String username){
+        return ResponseEntity.ok().body(service.findUserName(username));
+    }
+
+    @GetMapping("/email{email}")
+    public ResponseEntity<ResponseUserDto> findByEmail( @PathVariable String email){
+        return ResponseEntity.ok().body(service.findByEmail(email));
+    }
+
     @PostMapping
     public ResponseEntity<ResponseUserDto> createdUser(@RequestBody RequestUserDto user){
         var userCreated= service.insertUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
+
     @PutMapping
     public ResponseEntity<ResponseUserDto> updateUser(@RequestBody RequestUserDto user){
         var userCreated= service.updateUser(user);
@@ -34,26 +58,5 @@ public class UserController {
         var userDelete= service.deleteUser(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDelete);
     }
-
-
-    @GetMapping
-    public ResponseEntity<List<ResponseUserDto>> findAll(){
-        return ResponseEntity.ok().body(service.findAll());
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseUserDto> findById(@PathVariable Long id){
-        return ResponseEntity.ok().body(service.findUserID(id));
-    }
-    @GetMapping("/username/{username}")
-    public ResponseEntity<ResponseUserDto> findByUsername(@PathVariable String username){
-        return ResponseEntity.ok().body(service.findUserName(username));
-    }
-    @GetMapping("/email{email}")
-    public ResponseEntity<ResponseUserDto> findByEmail( @PathVariable String email){
-        return ResponseEntity.ok().body(service.findByEmail(email));
-    }
-
-
-
 
 }

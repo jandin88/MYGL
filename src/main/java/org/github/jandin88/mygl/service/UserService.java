@@ -2,6 +2,7 @@ package org.github.jandin88.mygl.service;
 
 
 
+import jakarta.persistence.EntityNotFoundException;
 import org.github.jandin88.mygl.domain.model.User;
 import org.github.jandin88.mygl.domain.repository.UsersRepository;
 import org.github.jandin88.mygl.dto.RequestUserDto;
@@ -29,13 +30,14 @@ public class UserService {
         return new ResponseUserDto(repository.save(user));
     }
 
-    public ResponseUserDto updateUser(RequestUserDto UserUpdated){
-        User userToBeUpdate= repository.findUserByEmail(UserUpdated.email());
-        userToBeUpdate.setPassword(UserUpdated.password());
-        userToBeUpdate.setUsername(UserUpdated.username());
-        userToBeUpdate.setEmail(UserUpdated.email());
-        return new ResponseUserDto(repository.save(userToBeUpdate));
+    public ResponseUserDto updateUser(RequestUserDto userUpdated){
+        User userToBeUpdate= repository.findUserByEmail(userUpdated.email())
+              .orElseThrow(()-> new EntityNotFoundException("Unable to update user: user not found in system"));
 
+        userToBeUpdate.setPassword(userUpdated.password());
+        userToBeUpdate.setUsername(userUpdated.username());
+        userToBeUpdate.setEmail(userUpdated.email());
+        return new ResponseUserDto(repository.save(userToBeUpdate));
     }
 
     public ResponseUserDto deleteUser(Long id){
@@ -55,6 +57,7 @@ public class UserService {
     public ResponseUserDto findUserID(Long id) {
         return new ResponseUserDto(findUserId(id));
     }
+
     public ResponseUserDto findUserName(String username) {
         return new ResponseUserDto(
                 repository.findUserByUsername(username
@@ -62,7 +65,8 @@ public class UserService {
     }
     public ResponseUserDto findByEmail(String email) {
         return new ResponseUserDto(
-                repository.findUserByEmail(email));
+              repository.findUserByEmail(email)
+                    .orElseThrow(()-> new EntityNotFoundException("User does not exist "+email)));
     }
 
 

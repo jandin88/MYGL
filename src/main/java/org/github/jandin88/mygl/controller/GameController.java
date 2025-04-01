@@ -7,6 +7,7 @@ import org.github.jandin88.mygl.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,13 +32,21 @@ public class GameController {
 
     @GetMapping("title/{title}")
     public ResponseEntity<List<Game>> findTitle(@PathVariable String title){
-        return ResponseEntity.ok(service.findByName(title));
+        return ResponseEntity.ok(service.findAllByTitleLike(title));
     }
+
 
     @GetMapping("search/{title}")
     public ResponseEntity<List<Game>> searchGames(@PathVariable String title){
         return ResponseEntity.ok(service.searchByGames(title));
     }
+
+    @GetMapping("search/specific/{name}")
+    public ResponseEntity<Game> searchGameSpecific(@PathVariable String name){
+        return ResponseEntity.ok(service.findBySpecificNames(name));
+    }
+
+
     @GetMapping("id/{id}")
     public ResponseEntity<Game> findByIdGame(@PathVariable Long id){
         return ResponseEntity.ok(service.findById(id));

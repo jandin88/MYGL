@@ -2,6 +2,7 @@ package org.github.jandin88.mygl.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class Game implements Serializable {
     private String description;
 
     @Column(nullable = false, updatable = false)
+    @Schema(type = "string", pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate releaseDate;
 

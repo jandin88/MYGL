@@ -1,11 +1,12 @@
 package org.github.jandin88.mygl.domain.model;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.*;
+import org.github.jandin88.mygl.domain.model.enuns.UserRole;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -28,8 +29,13 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<UserRole> role;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+
 
     public User(String username, String email, String password){
         this.username=username;

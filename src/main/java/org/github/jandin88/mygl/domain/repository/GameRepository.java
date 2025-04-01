@@ -5,17 +5,19 @@ import org.github.jandin88.mygl.domain.model.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT g FROM Game g WHERE LOWER(g.title) LIKE LOWER(CONCAT('%', :title, '%'))")
-    List<Game> searchPartialTile(String title);
+    Optional<List<Game>> searchPartialTile(String title);
 
-    Game findGameByTitleIgnoreCase(String title);
+    Optional<Game> findGameByTitleIgnoreCase(String title);
 
-    List<Game> findGameByDeveloperIgnoreCase(String developer);
+    Optional<List<Game>> findGameByDeveloperContainingIgnoreCase(String developer);
 
-    List<Game> findGameByGenreIgnoreCase(String genre);
+    Optional<List<Game>> findByGenreContainingIgnoreCase(String genre);
 
 
     @Query(value = "SELECT g.*, similarity(g.title, :title) AS similarity_score " +
@@ -23,5 +25,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
             "ORDER BY similarity(g.title, :title) DESC " +  // Correção: Ordenar de forma decrescente
             "LIMIT 10",
             nativeQuery = true)
-    List<Game> searchTitleGames(String title);
+    Optional<List<Game>> searchTitleGames(String title);
 }

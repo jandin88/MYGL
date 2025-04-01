@@ -5,9 +5,11 @@ import org.github.jandin88.mygl.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+import java.util.Optional;
+
+//@Repository
 public interface UsersRepository extends JpaRepository<User,Long> {
-    User findUserByEmail(String email);
+    Optional<User> findUserByEmail(String email);
     User findUserByUsername(String username);
 
 }
