@@ -29,27 +29,31 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<UserRole> role;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
 
 
-    public User(String username, String email, String password){
+    public User(String username, String email, String password, UserRole role){
         this.username=username;
         this.email=email;
         this.password=password;
+        this.createdAt=LocalDateTime.now();
+        this.role=role;
     }
 
     public User() {
     }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
+
 
 
 }

@@ -20,7 +20,7 @@ public class GameController {
     private GameService service;
 
     @PostMapping
-    public ResponseEntity<Game> insertGame(@RequestBody Game game){
+    public ResponseEntity<Game> addGame(@RequestBody Game game){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addGame(game));
     }
 
@@ -45,7 +45,6 @@ public class GameController {
     public ResponseEntity<Game> searchGameSpecific(@PathVariable String name){
         return ResponseEntity.ok(service.findBySpecificNames(name));
     }
-
 
     @GetMapping("id/{id}")
     public ResponseEntity<Game> findByIdGame(@PathVariable Long id){

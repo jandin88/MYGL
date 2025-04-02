@@ -1,17 +1,39 @@
 package org.github.jandin88.mygl.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import org.github.jandin88.mygl.dto.user.LoginRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.impl.Base64Codec;
 
-import java.security.Key;
-import java.util.Date;
+
 
 @Service
 public class JwtService {
 
-    private String secretKey;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+
+    public String authenticateAndGenerateToken(LoginRequestDTO loginRequest){
+        Authentication authentication= authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(loginRequest.username(),loginRequest.password())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetails userDetails= userDetailsService.loadUserByUsername(loginRequest.username());
+        return  tokenProvider.generateToken((userDetails));
+    }
+
 
 //    private Key getSignKey(){
 //        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

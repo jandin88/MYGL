@@ -4,9 +4,10 @@ package org.github.jandin88.mygl.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.github.jandin88.mygl.domain.model.User;
+import org.github.jandin88.mygl.domain.model.enuns.UserRole;
 import org.github.jandin88.mygl.domain.repository.UsersRepository;
-import org.github.jandin88.mygl.dto.RequestUserDto;
-import org.github.jandin88.mygl.dto.ResponseUserDto;
+import org.github.jandin88.mygl.dto.user.UserRequestDto;
+import org.github.jandin88.mygl.dto.user.UserResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,47 +25,51 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public ResponseUserDto insertUser(RequestUserDto userDto){
+    public UserResponseDto insertUser(UserRequestDto userDto, UserRole role){
         String encoder=passwordEncoder.encode(userDto.password());
-        User user = new User(userDto.username(),userDto.email(),encoder);
-        return new ResponseUserDto(repository.save(user));
+        User user = new User(userDto.username(),userDto.email(),encoder, role);
+        return new UserResponseDto(repository.save(user));
     }
 
-    public ResponseUserDto updateUser(RequestUserDto userUpdated){
+//    public TokenResponseDTO login(LoginRequestDTO user){
+//        return  new TokenResponseDTO();
+//    }
+
+    public UserResponseDto updateUser(UserRequestDto userUpdated){
         User userToBeUpdate= repository.findUserByEmail(userUpdated.email())
               .orElseThrow(()-> new EntityNotFoundException("Unable to update user: user not found in system"));
 
         userToBeUpdate.setPassword(userUpdated.password());
         userToBeUpdate.setUsername(userUpdated.username());
         userToBeUpdate.setEmail(userUpdated.email());
-        return new ResponseUserDto(repository.save(userToBeUpdate));
+        return new UserResponseDto(repository.save(userToBeUpdate));
     }
 
-    public ResponseUserDto deleteUser(Long id){
+    public UserResponseDto deleteUser(Long id){
         User deleted= findUserId(id);
         repository.delete(deleted);
-        return new ResponseUserDto(deleted);
+        return new UserResponseDto(deleted);
     }
 
-    public List<ResponseUserDto> findAll() {
+    public List<UserResponseDto> findAll() {
         return repository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(User::getUserID))
-                .map(ResponseUserDto::new)
+                .map(UserResponseDto::new)
                 .collect(Collectors.toList());
     }
 
-    public ResponseUserDto findUserID(Long id) {
-        return new ResponseUserDto(findUserId(id));
+    public UserResponseDto findUserID(Long id) {
+        return new UserResponseDto(findUserId(id));
     }
 
-    public ResponseUserDto findUserName(String username) {
-        return new ResponseUserDto(
+    public UserResponseDto findUserName(String username) {
+        return new UserResponseDto(
                 repository.findUserByUsername(username
-                ));
+                ).orElseThrow(()->new NoSuchElementException("Userename not found "+username)));
     }
-    public ResponseUserDto findByEmail(String email) {
-        return new ResponseUserDto(
+    public UserResponseDto findByEmail(String email) {
+        return new UserResponseDto(
               repository.findUserByEmail(email)
                     .orElseThrow(()-> new EntityNotFoundException("User does not exist "+email)));
     }
