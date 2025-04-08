@@ -20,8 +20,8 @@ public class UserController {
     private UserService service;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> findAll(){
-        return ResponseEntity.ok().body(service.findAll());
+    public ResponseEntity<UserResponseDto> findAll(HttpServletRequest request){
+        return ResponseEntity.ok().body(service.whoami(request));
     }
 
     @GetMapping("/{id}")
@@ -34,29 +34,27 @@ public class UserController {
         return ResponseEntity.ok().body(service.findUserName(username));
     }
 
-    @GetMapping("/email{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<UserResponseDto> findByEmail(@PathVariable String email){
         return ResponseEntity.ok().body(service.findByEmail(email));
     }
 
 
-    @GetMapping("test")
-    public ResponseEntity<String> all(HttpServletRequest request) {
-        System.out.println(">>> Usuario logado: " + request.getUserPrincipal());
-        return ResponseEntity.ok("rota protegida acessada");
-    }
-
-
     @PutMapping
-    public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRequestDto user){
-        var userCreated= service.updateUser(user);
+    public ResponseEntity<UserResponseDto> updateUser(HttpServletRequest request,@RequestBody UserRequestDto user){
+        var userCreated= service.updateUser(user, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponseDto> deleteUser(@PathVariable Long id){
-        var userDelete= service.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userDelete);
+    @DeleteMapping("/{name}")
+    public ResponseEntity<String> deleteUser(HttpServletRequest request, String username){
+         service.deleteUser(username, request);
+        return ResponseEntity.ok().body("user deleted");
     }
 
+    //    @GetMapping("test")
+//    public ResponseEntity<String> all(HttpServletRequest request) {
+//        System.out.println(">>> Usuario logado: " + request.getUserPrincipal());
+//        return ResponseEntity.ok("rota protegida acessada");
+//    }
 }

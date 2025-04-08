@@ -1,11 +1,21 @@
 package org.github.jandin88.mygl.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import org.github.jandin88.mygl.controller.exception.CustomException;
+import org.github.jandin88.mygl.security.userDetails.MyUserDetails;
+import org.github.jandin88.mygl.security.userDetails.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -22,6 +32,9 @@ public class JwtTokenProvider {
     private String secretKey;
     @Value("${JWTEXPIRATIONS}")
     private long validityToken=86400000;
+
+    @Autowired
+    private UserDetailsServiceImpl myUserDetails;
 
     public String generateToken(UserDetails userDetails){
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -52,10 +65,23 @@ public class JwtTokenProvider {
                   .build()
                   .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            System.out.println(">>> Token inválido: " + e.getMessage());
-            return false;
+        } catch (JwtException | IllegalArgumentException  e) {
+            System.out.println("error no token is valid");
+            throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public String resolveToken(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+
+    public Authentication getAuthentication(String token){
+        UserDetails userDetails = myUserDetails.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails,"", userDetails.getAuthorities());
     }
 
     public String getUsername(String token) {
@@ -65,16 +91,6 @@ public class JwtTokenProvider {
               .parseClaimsJws(token)
               .getBody()
               .getSubject();
-    }
-
-    public String getRole(String token) {
-        Claims claims = Jwts.parserBuilder()
-              .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-              .build()
-              .parseClaimsJws(token)
-              .getBody();
-
-        return claims.get("role", String.class);
     }
 
 

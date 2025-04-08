@@ -18,7 +18,6 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Aqui você pode retornar roles se tiver
         return List.of(new SimpleGrantedAuthority("ROLE_"+user.getRole().name()));
     }
 
