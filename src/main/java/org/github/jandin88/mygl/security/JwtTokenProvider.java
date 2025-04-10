@@ -45,7 +45,6 @@ public class JwtTokenProvider {
               .findFirst()
               .orElse("USER");
 
-        System.out.println("\n\n\n\n "+role);
 
 
 
@@ -92,6 +91,7 @@ public class JwtTokenProvider {
               .getBody()
               .getSubject();
     }
+
 
 
 

@@ -46,7 +46,6 @@ public class UserService {
     private JwtTokenProvider tokenProvider;
 
 
-
     public String login(String userName, String password){
         Authentication authentication= authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(userName,password)
@@ -80,11 +79,11 @@ public class UserService {
         return new UserResponseDto(repository.save(userToBeUpdate));
     }
 
-    public UserResponseDto deleteUser(String username, HttpServletRequest request){
+    public void deleteUser(String username, HttpServletRequest request){
         User deleted= getUserByRequest(request);
         if(Objects.equals(deleted.getUsername(), username)) {
             repository.delete(deleted);
-            return new UserResponseDto(deleted);
+            new UserResponseDto(deleted);
         }else {
             throw new CustomException("invalid code",HttpStatus.BAD_REQUEST);
         }
@@ -113,6 +112,10 @@ public class UserService {
                     .orElseThrow(()-> new EntityNotFoundException("User does not exist "+email)));
     }
 
+    public User getUserByRequest(HttpServletRequest request){
+        return repository.findUserByUsername(tokenProvider.getUsername(tokenProvider.resolveToken(request))
+        ).orElseThrow(()->new NoSuchElementException("Username not found "));
+    }
 
     private User findUserId(Long id){
         return  repository.findById(id).orElseThrow(()->
@@ -121,13 +124,6 @@ public class UserService {
 
     private UserService(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
-    }
-
-
-    private User getUserByRequest(HttpServletRequest request){
-
-        return repository.findUserByUsername(tokenProvider.getUsername(tokenProvider.resolveToken(request))
-        ).orElseThrow(()->new NoSuchElementException("Username not found "));
     }
 
 }

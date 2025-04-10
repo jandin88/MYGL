@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.github.jandin88.mygl.domain.model.enuns.GameStatus;
+import org.github.jandin88.mygl.dto.userGameList.UserGameListRequest;
 
 import java.util.Date;
 
@@ -41,7 +42,13 @@ public class UserGameList {
     private Date finishDate;
 
 
-
-
-
+    public UserGameList(User user, Game game, UserGameListRequest userGameList) {
+        this.user= user;
+        this.game=game;
+        this.status= userGameList.status();
+        this.score=userGameList.score();
+        this.progress=userGameList.progress();
+        this.startDate=userGameList.startDate();
+        this.finishDate= userGameList.finishDate();
+    }
 }

@@ -46,8 +46,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
-    @DeleteMapping("/{name}")
-    public ResponseEntity<String> deleteUser(HttpServletRequest request, String username){
+    @DeleteMapping("/{username}")
+    public ResponseEntity<String> deleteUser(HttpServletRequest request, @PathVariable String username){
          service.deleteUser(username, request);
         return ResponseEntity.ok().body("user deleted");
     }
